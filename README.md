@@ -27,3 +27,14 @@ You now have the latest version of Helm 3 installed, and you can use it with `h3
 ```
 h3 --help
 ```
+
+## Running a registry
+
+Starting a registry for test purposes is trivial. As long as you have Docker installed, run the following command:
+```
+docker run -dp 5000:5000 --restart=always --name registry registry:2
+```
+
+This will start a registry server at `localhost:5000`.
+
+Use `docker logs -f registry` to see the logs and `docker rm -f registry` to stop.
