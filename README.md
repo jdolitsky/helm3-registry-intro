@@ -131,7 +131,7 @@ latest: removed
 
 Charts stored using the commands above will be cached on disk at `~/.helm/registry` (or somewhere else depending on `$HELM_HOME`).
 
-Chart content (tarball) and chart metadata (json) are stored as separate content-addressable blobs. They are joined together converted back into regular chart format when using the `export` command.
+Chart content (tarball) and chart metadata (json) are stored as separate content-addressable blobs. They are joined together and converted back into regular chart format when using the `export` command.
 
 The following shows an example of a single chart stored in the cache (`localhost:5000/myrepo/mychart:latest`):
 ```
