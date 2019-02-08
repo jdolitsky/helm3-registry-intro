@@ -127,6 +127,12 @@ $ h3 chart remove localhost:5000/myrepo/mychart:latest
 latest: removed
 ```
 
+## Authentication
+
+Currently, the local Docker credentials are used by default.
+
+Please run `docker login` in advance for any private registries.
+
 ## Where are my charts?
 
 Charts stored using the commands above will be cached on disk at `~/.helm/registry` (or somewhere else depending on `$HELM_HOME`).
