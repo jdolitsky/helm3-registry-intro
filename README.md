@@ -127,6 +127,36 @@ $ h3 chart remove localhost:5000/myrepo/mychart:latest
 latest: removed
 ```
 
+## Where are my charts?
+
+Charts stored using the commands above will be cached on disk at `~/.helm/registry` (or somewhere else depending on `$HELM_HOME`).
+
+Chart content (tarball) and chart metadata (json) are stored as separate content-addressable blobs. They are joined together converted back into regular chart format when using the `export` command.
+
+The following shows an example of a single chart stored in the cache (`localhost:5000/myrepo/mychart:latest`):
+```
+$ tree ~/.helm/registry
+/Users/me/.helm/registry
+├── blobs
+│   └── sha256
+│       ├── 3344059bb81c49cc6f2599a379da0a6c14313cf969f7b821aca18e489ba3991b
+│       └── 84059d7403f496a1c63caf97fdc5e939ea39e561adbd98d0aa864d1b9fc9653f
+├── charts
+│   └── mychart
+│       └── versions
+│           └── 2.7.1
+└── refs
+    └── localhost_5000
+        └── myrepo
+            └── mychart
+                └── tags
+                    └── latest
+                        ├── chart -> /Users/me/.helm/registry/charts/mychart/versions/2.7.1
+                        ├── content -> /Users/me/.helm/registry/blobs/sha256/3344059bb81c49cc6f2599a379da0a6c14313cf969f7b821aca18e489ba3991b
+                        └── meta -> /Users/me/.helm/registry/blobs/sha256/84059d7403f496a1c63caf97fdc5e939ea39e561adbd98d0aa864d1b9fc9653f
+```
+
+
 ## ⚠️ Warning
 
 This is all subject to change in the near future! Things will probably look similar in Helm 3.0 but several details may change, including UX and backend implementation.
