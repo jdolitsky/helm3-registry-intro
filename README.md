@@ -164,6 +164,11 @@ $ tree ~/.helm/registry
                         └── meta -> /Users/me/.helm/registry/blobs/sha256/84059d7403f496a1c63caf97fdc5e939ea39e561adbd98d0aa864d1b9fc9653f
 ```
 
+## Migrating from existing chart repos
+
+Migrating charts from existing repos is as simple as a `helm fetch`, `h3 chart save`, `h3 chart push`.
+
+Please see the [import-stable.sh](./import-stable.sh) script in this repo for example of how you can import the latest version of every chart in the stable repo into your registry.
 
 ## ⚠️ Warning
 
