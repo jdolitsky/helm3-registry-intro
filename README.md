@@ -3,7 +3,7 @@ This repo contains some commands for how to get started working with Helm 3 and 
 
 ## Getting Helm 3
 
-Helm 3 currently exists on the dev-v3 branch of the official Helm. In order to get up and running, you will need a working Go 1.11+ environment.
+Helm 3 currently exists on the dev-v3 branch of the official Helm repo. In order to get up and running, you will need a working Go 1.11+ dev environment.
 
 First clone the Helm repo into `$GOPATH/src/k8s.io` (example shows dev-v3 branch only):
 ```
@@ -42,3 +42,98 @@ Use `docker logs -f registry` to see the logs and `docker rm -f registry` to sto
 If you wish to persist storage, you can add `-v $(pwd)/registry:/var/lib/registry` to the command above.
 
 For more configuration options, please see [the docs](https://docs.docker.com/registry/deploying/).
+
+## Using the new commands
+
+A new set of commands are available under `h3 chart` that allow you to work with registries and local cache.
+
+### save
+
+save a chart directory
+
+```
+$ h3 chart save mychart/ localhost:5000/myrepo/mychart:latest
+3344059: Saving meta (216 B)
+84059d7: Saving content (454 B)
+Name: mychart
+Version: 2.7.0
+Meta: sha256:3344059bb81c49cc6f2599a379da0a6c14313cf969f7b821aca18e489ba3991b
+Content: sha256:84059d7403f496a1c63caf97fdc5e939ea39e561adbd98d0aa864d1b9fc9653f
+latest: saved
+```
+
+### list
+
+list all saved charts
+
+```
+$ h3 chart list
+REF                                                     NAME                    VERSION DIGEST  SIZE            CREATED
+localhost:5000/myrepo/mychart:latest                    mychart                 2.7.1   84059d7 454 B           27 seconds
+localhost:5000/stable/acs-engine-autoscaler:latest      acs-engine-autoscaler   2.2.2   d8d6762 4.3 KiB         2 hours
+localhost:5000/stable/aerospike:latest                  aerospike               0.2.1   4aff638 3.7 KiB         2 hours
+localhost:5000/stable/airflow:latest                    airflow                 0.13.0  c46cc43 28.1 KiB        2 hours
+localhost:5000/stable/anchore-engine:latest             anchore-engine          0.10.0  3f3dcd7 34.3 KiB        2 hours
+...
+```
+
+### export
+
+export a chart to directory
+
+```
+$ h3 chart export localhost:5000/myrepo/mychart:latest
+Name: mychart
+Version: 2.7.0
+Meta: sha256:3344059bb81c49cc6f2599a379da0a6c14313cf969f7b821aca18e489ba3991b
+Content: sha256:84059d7403f496a1c63caf97fdc5e939ea39e561adbd98d0aa864d1b9fc9653f
+Exported to mychart/
+```
+
+### push
+
+push a chart to remote
+
+```
+$ h3 chart push localhost:5000/myrepo/mychart:latest
+The push refers to repository [localhost:5000/myrepo/mychart]
+Name: mychart
+Version: 2.7.0
+Meta: sha256:3344059bb81c49cc6f2599a379da0a6c14313cf969f7b821aca18e489ba3991b
+Content: sha256:84059d7403f496a1c63caf97fdc5e939ea39e561adbd98d0aa864d1b9fc9653f
+latest: pushed to remote (2 layers, 670 B total)
+```
+
+### pull
+
+pull a chart from remote
+
+```
+$ h3 chart pull localhost:5000/stable/wordpress:latest
+latest: Pulling from localhost:5000/stable/wordpress
+2c017c4: Saving meta (437 B)
+8224586: Saving content (18.1 KiB)
+Name: wordpress
+Version: 5.1.2
+Meta: sha256:2c017c46f229ef5faf021d54c2ca6df862169e4314ccdf324ee6faa23ebc585f
+Content: sha256:8224586842c560dcbe3f98acd34aef243bb30233126af62efd3b2a82e4f3cae9
+Status: Downloaded newer chart for localhost:5000/stable/wordpress:latest
+```
+
+### remove
+
+```
+$ h3 chart remove localhost:5000/myrepo/mychart:latest
+latest: removed
+```
+
+## ⚠️ Warning
+
+This is all subject to change in the near future! Things will probably look similar in Helm 3.0 but several details may change, including UX and backend implementation.
+
+If you are interested in getting involved in this discussion, please join us in the [Kubernetes Slack](https://slack.k8s.io/) **#helm-dev** channel.
+
+
+
+
+
