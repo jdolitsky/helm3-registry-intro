@@ -139,6 +139,8 @@ Charts stored using the commands above will be cached on disk at `~/.helm/regist
 
 Chart content (tarball) and chart metadata (json) are stored as separate content-addressable blobs.  This prevents storing the same content twice when, for example, you are simply modifying some fields in `Chart.yaml`. They are joined together and converted back into regular chart format when using the `export` command.
 
+The chart name and chart version are treated as "first-class" properties and stored separately. They are extracted out of `Chart.yaml` prior to building the metadata blob.
+
 The following shows an example of a single chart stored in the cache (`localhost:5000/myrepo/mychart:latest`):
 ```
 $ tree ~/.helm/registry
