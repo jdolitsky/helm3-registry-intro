@@ -38,3 +38,7 @@ docker run -dp 5000:5000 --restart=always --name registry registry:2
 This will start a registry server at `localhost:5000`.
 
 Use `docker logs -f registry` to see the logs and `docker rm -f registry` to stop.
+
+If you wish to persist storage, you can add `-v $(pwd)/registry:/var/lib/registry` to the command above.
+
+For more configuration options, please see [the docs](https://docs.docker.com/registry/deploying/).
