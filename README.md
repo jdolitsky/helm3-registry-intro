@@ -3,12 +3,12 @@ This repo contains some commands for how to get started working with Helm 3 and 
 
 ## Getting Helm 3
 
-Helm 3 currently exists on the dev-v3 branch of the official Helm repo. In order to get up and running, you will need a working Go 1.11+ dev environment.
+Helm 3 currently exists on the dev-v3 branch of the official Helm repo. In order to get up and running, you will need a working Go 1.12+ dev environment.
 
-First clone the Helm repo into `$GOPATH/src/k8s.io` (example shows dev-v3 branch only):
+First clone the Helm repo into `$GOPATH/src/helm.sh` (example shows dev-v3 branch only):
 ```
-mkdir -p $GOPATH/src/k8s.io/
-cd $GOPATH/src/k8s.io/
+mkdir -p $GOPATH/src/helm.sh/
+cd $GOPATH/src/helm.sh/
 git clone --single-branch --branch dev-v3 git@github.com:helm/helm.git
 cd helm/
 ```
@@ -32,7 +32,7 @@ h3 --help
 
 Starting a registry for test purposes is trivial. As long as you have Docker installed, run the following command:
 ```
-docker run -dp 5000:5000 --restart=always --name registry registry:2
+docker run -dp 5000:5000 --restart=always --name registry registry
 ```
 
 This will start a registry server at `localhost:5000`.
@@ -43,26 +43,68 @@ If you wish to persist storage, you can add `-v $(pwd)/registry:/var/lib/registr
 
 For more configuration options, please see [the docs](https://docs.docker.com/registry/deploying/).
 
+### Auth
+
+If you wish to enable auth on the registry, you can do the following-
+
+First, create file `auth.htpasswd` with username and password combo:
+```
+htpasswd -cB -b auth.htpasswd myuser mypass
+```
+
+Then, start the server, mounting that file and setting the `REGISTRY_AUTH` env var:
+```
+docker run -dp 5000:5000 --restart=always --name registry \
+  -v $(pwd)/auth.htpasswd:/etc/docker/registry/auth.htpasswd \
+  -e REGISTRY_AUTH="{htpasswd: {realm: localhost, path: /etc/docker/registry/auth.htpasswd}}" \
+  registry
+```
+
+
 ## Using the new commands
 
-A new set of commands are available under `h3 chart` that allow you to work with registries and local cache.
+New sets of commands are available under both `h3 registry` and `h3 chart` that allow you to work with registries and local cache.
 
-### save
+### The `registry` subcommand
 
-save a chart directory
+#### `login`
+
+login to a registry (with manual password entry)
+
+```
+$ h3 registry login -u myuser localhost:5000
+Password:
+Login succeeded
+```
+
+#### `logout`
+
+logout from a registry
+
+```
+$ h3 registry logout localhost:5000
+Logout succeeded
+```
+
+### The `chart` subcommand
+
+#### `save`
+
+save a chart directory to local cache
+
+*Note: you can use the `mychart/` directory found in this repo (or another chart).
+Just make sure `apiVersion: v1` is set in `Chart.yaml`.*
 
 ```
 $ h3 chart save mychart/ localhost:5000/myrepo/mychart:latest
-3344059: Saving meta (216 B)
-84059d7: Saving content (454 B)
 Name: mychart
 Version: 2.7.0
-Meta: sha256:3344059bb81c49cc6f2599a379da0a6c14313cf969f7b821aca18e489ba3991b
-Content: sha256:84059d7403f496a1c63caf97fdc5e939ea39e561adbd98d0aa864d1b9fc9653f
+Meta: sha256:ca9588a9340fb83a62777cd177dae4ba5ab52061a1618ce2e21930b86c412d9e
+Content: sha256:a66666c6b35ee25aa8ecd7d0e871389b5a2a0576295d6c366aefe836001cb90d
 latest: saved
 ```
 
-### list
+#### `list`
 
 list all saved charts
 
@@ -77,7 +119,7 @@ localhost:5000/stable/anchore-engine:latest             anchore-engine          
 ...
 ```
 
-### export
+#### `export`
 
 export a chart to directory
 
@@ -90,7 +132,7 @@ Content: sha256:84059d7403f496a1c63caf97fdc5e939ea39e561adbd98d0aa864d1b9fc9653f
 Exported to mychart/
 ```
 
-### push
+#### `push`
 
 push a chart to remote
 
@@ -99,39 +141,33 @@ $ h3 chart push localhost:5000/myrepo/mychart:latest
 The push refers to repository [localhost:5000/myrepo/mychart]
 Name: mychart
 Version: 2.7.0
-Meta: sha256:3344059bb81c49cc6f2599a379da0a6c14313cf969f7b821aca18e489ba3991b
-Content: sha256:84059d7403f496a1c63caf97fdc5e939ea39e561adbd98d0aa864d1b9fc9653f
-latest: pushed to remote (2 layers, 670 B total)
+Meta: sha256:ca9588a9340fb83a62777cd177dae4ba5ab52061a1618ce2e21930b86c412d9e
+Content: sha256:a66666c6b35ee25aa8ecd7d0e871389b5a2a0576295d6c366aefe836001cb90d
+latest: pushed to remote (2 layers, 478 B total)
 ```
 
-### pull
+#### `remove`
 
-pull a chart from remote
-
-```
-$ h3 chart pull localhost:5000/stable/wordpress:latest
-latest: Pulling from localhost:5000/stable/wordpress
-2c017c4: Saving meta (437 B)
-8224586: Saving content (18.1 KiB)
-Name: wordpress
-Version: 5.1.2
-Meta: sha256:2c017c46f229ef5faf021d54c2ca6df862169e4314ccdf324ee6faa23ebc585f
-Content: sha256:8224586842c560dcbe3f98acd34aef243bb30233126af62efd3b2a82e4f3cae9
-Status: Downloaded newer chart for localhost:5000/stable/wordpress:latest
-```
-
-### remove
+remove a chart from cache
 
 ```
 $ h3 chart remove localhost:5000/myrepo/mychart:latest
 latest: removed
 ```
 
-## Authentication
+#### `pull`
 
-Currently, the local Docker credentials are used by default.
+pull a chart from remote
 
-Please run `docker login` in advance for any private registries.
+```
+$ h3 chart pull localhost:5000/myrepo/mychart:latest
+latest: Pulling from localhost:5000/myrepo/mychart
+Name: mychart
+Version: 2.7.0
+Meta: sha256:ca9588a9340fb83a62777cd177dae4ba5ab52061a1618ce2e21930b86c412d9e
+Content: sha256:a66666c6b35ee25aa8ecd7d0e871389b5a2a0576295d6c366aefe836001cb90d
+Status: Chart is up to date for localhost:5000/myrepo/mychart:latest
+```
 
 ## Where are my charts?
 
@@ -175,8 +211,3 @@ Please see the [import-stable.sh](./import-stable.sh) script in this repo for ex
 This is all subject to change in the near future! Things will probably look similar in Helm 3.0 but several details may change, including UX and backend implementation.
 
 If you are interested in getting involved in this discussion, please join us in the [Kubernetes Slack](https://slack.k8s.io/) **#helm-dev** channel.
-
-
-
-
-
