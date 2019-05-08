@@ -16,14 +16,14 @@ for chart in $(helm search stable | tail -n +2 | awk '{print $1}'); do
     if [ ! -d $name ]; then
         echo "------------------------------------------------------"
         echo "+ helm fetch $chart --untar"
-        helm fetch $chart --untar
+        helm fetch $chart --untar || echo "Issue fetching $chart"
     fi
     echo "------------------------------------------------------"
     echo "+ h3 chart save $name $chart"
-    h3 chart save $name $ref
+    h3 chart save $name $ref || echo "Issue saving $ref"
     echo "------------------------------------------------------"
     echo "+ h3 chart push $ref"
-    h3 chart push $ref
+    h3 chart push $ref || echo "Issue pushing $ref"
 done
 
 echo "------------------------------------------------------"
