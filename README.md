@@ -3,6 +3,8 @@ This repo contains some commands for how to get started working with Helm 3 and 
 
 ## Getting Helm 3
 
+### Build from latest source
+
 Helm 3 currently exists on the dev-v3 branch of the official Helm repo. In order to get up and running, you will need a working Go 1.12+ dev environment.
 
 First clone the Helm repo into `$GOPATH/src/helm.sh` (example shows dev-v3 branch only):
@@ -27,39 +29,6 @@ You now have the latest version of Helm 3 installed, and you can use it with `h3
 ```
 h3 --help
 ```
-
-## Running a registry
-
-Starting a registry for test purposes is trivial. As long as you have Docker installed, run the following command:
-```
-docker run -dp 5000:5000 --restart=always --name registry registry
-```
-
-This will start a registry server at `localhost:5000`.
-
-Use `docker logs -f registry` to see the logs and `docker rm -f registry` to stop.
-
-If you wish to persist storage, you can add `-v $(pwd)/registry:/var/lib/registry` to the command above.
-
-For more configuration options, please see [the docs](https://docs.docker.com/registry/deploying/).
-
-### Auth
-
-If you wish to enable auth on the registry, you can do the following-
-
-First, create file `auth.htpasswd` with username and password combo:
-```
-htpasswd -cB -b auth.htpasswd myuser mypass
-```
-
-Then, start the server, mounting that file and setting the `REGISTRY_AUTH` env var:
-```
-docker run -dp 5000:5000 --restart=always --name registry \
-  -v $(pwd)/auth.htpasswd:/etc/docker/registry/auth.htpasswd \
-  -e REGISTRY_AUTH="{htpasswd: {realm: localhost, path: /etc/docker/registry/auth.htpasswd}}" \
-  registry
-```
-
 
 ## Using the new commands
 
@@ -168,6 +137,38 @@ Meta: sha256:ca9588a9340fb83a62777cd177dae4ba5ab52061a1618ce2e21930b86c412d9e
 Content: sha256:a66666c6b35ee25aa8ecd7d0e871389b5a2a0576295d6c366aefe836001cb90d
 Status: Chart is up to date for localhost:5000/myrepo/mychart:latest
 ```
+## Running a registry
+
+Starting a registry for test purposes is trivial. As long as you have Docker installed, run the following command:
+```
+docker run -dp 5000:5000 --restart=always --name registry registry
+```
+
+This will start a registry server at `localhost:5000`.
+
+Use `docker logs -f registry` to see the logs and `docker rm -f registry` to stop.
+
+If you wish to persist storage, you can add `-v $(pwd)/registry:/var/lib/registry` to the command above.
+
+For more configuration options, please see [the docs](https://docs.docker.com/registry/deploying/).
+
+### Auth
+
+If you wish to enable auth on the registry, you can do the following-
+
+First, create file `auth.htpasswd` with username and password combo:
+```
+htpasswd -cB -b auth.htpasswd myuser mypass
+```
+
+Then, start the server, mounting that file and setting the `REGISTRY_AUTH` env var:
+```
+docker run -dp 5000:5000 --restart=always --name registry \
+  -v $(pwd)/auth.htpasswd:/etc/docker/registry/auth.htpasswd \
+  -e REGISTRY_AUTH="{htpasswd: {realm: localhost, path: /etc/docker/registry/auth.htpasswd}}" \
+  registry
+```
+
 
 ## Where are my charts?
 
