@@ -3,7 +3,13 @@ This repo contains some commands for how to get started working with Helm 3 and 
 
 ## Getting Helm 3
 
-### Build from latest source
+### Install latest release
+
+Helm **v3.0.0-alpha.1** is currently available. Please see the bottom of the [release notes](https://github.com/helm/helm/releases/tag/v3.0.0-alpha.1) for download URLs.
+
+Please see this [example script](https://gist.github.com/jdolitsky/0ec804b09f24a24b05acb681f01903c9) for how to install on macOS.
+
+### Build from dev-v3 branch
 
 Helm 3 currently exists on the dev-v3 branch of the official Helm repo. In order to get up and running, you will need a working Go 1.12+ dev environment.
 
